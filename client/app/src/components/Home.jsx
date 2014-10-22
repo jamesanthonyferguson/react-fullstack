@@ -24,6 +24,7 @@ var APP = React.createClass({
 
   componentDidMount: function(){
     AppStore.addChangeListener(this._onChange);
+    AppAction.populateAction();
   },
 
   componentWillUnmount: function(){
@@ -33,7 +34,7 @@ var APP = React.createClass({
   handleClick: function(){
     AppActions.exampleAction('Data from View');
   },
-  
+
   render: function(){
     return (
       <div>

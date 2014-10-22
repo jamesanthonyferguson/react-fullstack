@@ -6,10 +6,11 @@ var browserify = require('browserify');
 var reactify = require('reactify');
 var source = require('vinyl-source-stream');
 var connect = require('gulp-connect');
+var nodemon = require('gulp-nodemon');
 
 var paths = {
-    app: ['./templates/app/src/app.jsx'],
-    js: ['./templates/app/src/**/*.*'],
+    app: ['./client/app/src/app.jsx'],
+    js: ['./client/app/src/**/*.*'],
 };
 
 gulp.task('browserify', function() {
@@ -18,17 +19,22 @@ gulp.task('browserify', function() {
         .transform(reactify)
         .bundle()
         .pipe(source('bundle.js'))
-        .pipe(gulp.dest('./templates/app/build/'))
-        .pipe(connect.reload());
+        .pipe(gulp.dest('./client/app/build/'));
+        // .pipe(connect.reload());
 });
 
-gulp.task('connect', function(){
-  connect.server({
-    root: 'templates/app',
-    livereload: true,
-    port: 8080
-  });
-});
+// gulp.task('connect', function(){
+//   connect.server({
+//     root: 'templates/app',
+//     livereload: true,
+//     port: 8080
+//   });
+// });
+
+gulp.task('nodemon', function(done){
+    nodemon({ script: './server/app.js', env: { 'NODE_ENV': 'development'}})
+    .on('restart');
+})
 
 // Rerun the task when a file changes
 gulp.task('watch', function() {
@@ -37,3 +43,8 @@ gulp.task('watch', function() {
 
 // The default task (called when you run `gulp` from cli)
 gulp.task('default', ['connect', 'watch', 'browserify']);
+
+gulp.task('serve', ['browserify', 'nodemon']);
+
+// Update Express is serving the right files
+// Browserify/Reactify/Serve

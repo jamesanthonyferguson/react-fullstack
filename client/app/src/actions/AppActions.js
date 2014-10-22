@@ -3,6 +3,11 @@ var AppDispatcher = require('../dispatchers/AppDispatcher');
 var AppConstants = require('../constants/AppConstants');
 
 var AppActions = {
+  populateAction: function() {
+    AppDispatcher.handleViewAction({
+      actionType: AppConstants.POPULATE
+    });
+  },
   addItemAction: function(text) {
     AppDispatcher.handleViewAction({
       actionType: AppConstants.ADD,
