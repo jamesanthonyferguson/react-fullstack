@@ -4,7 +4,7 @@ var AppConstants = require('../constants/AppConstants');
 
 var AppActions = {
   populateAction: function() {
-    AppDispatcher.handleViewAction({
+    return AppDispatcher.handleViewAction({
       actionType: AppConstants.POPULATE
     });
   },

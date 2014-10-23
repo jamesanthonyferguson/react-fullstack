@@ -4,6 +4,7 @@ var AppDispatcher = require('../dispatchers/AppDispatcher');
 var EventEmitter = require('events').EventEmitter;
 var AppConstants = require('../constants/AppConstants');
 var merge = require('react/lib/merge');
+var Q = require('q');
 
 var CHANGE_EVENT = 'change';
 
@@ -16,26 +17,54 @@ var _data = {
 //     {item:'Gulp', id: 2},
 //     {item:'Express Server', id: 3},
 //     {item: 'Mongo Database', id: 4}
+var staticPromise = function(params){
+  var output = Q.defer();
+  Q.resolve(params);
+  return Q.promise;
+}
 
+var httpGet = function(url){
+  var output = Q.defer();
+  $.ajax({
+    type: 'GET',
+    url: url
+  }).success(function(data){
+    output.resolve(data);
+  }).error(function(error){
+    output.reject(error);
+  });
+  return output.promise;
+}
 var AppStore = merge(EventEmitter.prototype, {
 
-  getData: function(){
-    $.ajax({
-      url: '/api/things',
-      success: function(data) {
-        var output = [];
-        for (var i in data) {
-          var temp = {id: i, _id: data[i]['_id'], item: data[i]['name']};
-          output.push(temp);
-        }
-        _data.todos = output;
-        return _data.todos;
-      },
-      failure: function(err) {
-        console.log('failed to reach the db',err)
-      }
-    });
+  getInitialData: function(){
+    return _data;
   },
+
+  getData: function(){
+    return httpGet('/api/things');
+  },
+
+  // getData: function(){
+  //   console.log('triggered');
+  //   return Q($.ajax({
+  //     url: '/api/things'}))
+  //   .then(function(data) {
+  //       console.log('trigger2',data);
+  //       var output = [];
+  //       for (var i in data) {
+  //         var temp = {id: i, _id: data[i]['_id'], item: data[i]['name']};
+  //         output.push(temp);
+  //       }
+  //       _data.todos = output;
+  //       console.log(_data);
+  //       return _data;
+  //     })
+  //   .catch(function(err) {
+  //     console.log('failed to reach the db',err);
+  //     return {todos: []};
+  //   });
+  // },
 
   emitChange: function(){
     this.emit(CHANGE_EVENT);
@@ -54,7 +83,7 @@ AppDispatcher.register(function(payload){
   var action = payload.action;
 
   if(action.actionType === AppConstants.POPULATE) {
-    AppStore.getData();
+    return AppStore.getData();
   }
 
   if(action.actionType === AppConstants.ADD){

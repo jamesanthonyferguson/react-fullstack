@@ -7,15 +7,24 @@ var AppActions = require('../actions/AppActions');
 
 var NAV = require('./NavBar.jsx');
 var BANNER = require('./Banner.jsx');
-var TODO = require('./ToDo.jsx')
+var TODO = require('./ToDo.jsx');
+
+var Q = require('q');
 
 function getAppState(){
-  return AppStore.getData()
-};
+  return AppStore.getData();
+}
+
+function getInitialAppState(){
+  return AppStore.getInitialData();
+}
 
 var APP = React.createClass({
+
   getInitialState: function(){
-    return getAppState();
+    return getInitialAppState();
+    // return getAppState();
+    // return null;
   },
 
   _onChange: function(){
@@ -24,7 +33,10 @@ var APP = React.createClass({
 
   componentDidMount: function(){
     AppStore.addChangeListener(this._onChange);
-    AppAction.populateAction();
+    Q(AppActions.populateAction()).then(function(promisedData){
+      console.log(promisedData);
+      this.setState(promisedData);
+    });
   },
 
   componentWillUnmount: function(){
@@ -47,3 +59,28 @@ var APP = React.createClass({
 })
 
 module.exports = APP;
+
+// AppActions.populateAction();
+// return AppDispatcher.handleViewAction();
+// AppStore.getData()
+// httpGet
+
+// AppActions.pop()
+//   .then( AppDispatcher.handleViewAction(options) )
+//   .then( AppStore.getData() )
+//   .then( httpGet( url ) )
+//   .then(function( data){
+
+//   })
+
+
+
+
+
+
+
+
+
+
+
+
