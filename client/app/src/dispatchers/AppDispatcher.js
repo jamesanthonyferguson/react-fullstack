@@ -9,7 +9,6 @@ var AppDispatcher = copyProperties(new Dispatcher(), {
    * @param  {object} action The data coming from the view.
    */
   handleViewAction: function(action) {
-    console.log('t2')
     return this.dispatch({
       source: 'VIEW_ACTION',
       action: action

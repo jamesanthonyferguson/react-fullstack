@@ -84,6 +84,7 @@ AppDispatcher.register(function(payload){
     }
     var temp = {item: action.text, id: id};
     _data.todos.push(temp);
+    AppStore.emitChange();
     $.ajax({
       type: 'POST',
       data: JSON.stringify(temp),
@@ -104,7 +105,6 @@ AppDispatcher.register(function(payload){
 
 
   if(action.actionType === AppConstants.REMOVE){
-    console.log('t3')
     console.log(action)
     console.log(_data.todos)
 
@@ -112,18 +112,21 @@ AppDispatcher.register(function(payload){
       console.log(action.id);
       if (_data.todos[i].id === action.id) {
         var temp = _data.todos.splice(i, 1);
+        AppStore.emitChange();
         console.log(temp[0]['_id'])
         //AJAX GET passing in n
         return $.ajax({
           type: 'DELETE',
-          url: '/api/thing/' + temp[0]['_id'],
+          url: '/api/things/' + temp[0]['_id'],
           success: function(item){
             console.log('item removed successfully');
             console.log(item)
+            AppStore.emitChange();
           },
           failure: function(failure){
             console.log('item remove failed', failure);
             AppStore.getData();
+            AppStore.emitChange();
           },
         });
         break;
