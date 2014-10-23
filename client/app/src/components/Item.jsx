@@ -11,6 +11,7 @@ var ITEM = React.createClass({
 
   handleClick: function(e) {
     e.preventDefault();
+    console.log(this.props.item.id);
     AppActions.removeItemAction(this.props.item.id);
   },
 

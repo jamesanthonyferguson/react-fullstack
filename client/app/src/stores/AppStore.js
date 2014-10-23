@@ -29,6 +29,10 @@ var httpGet = function(url){
     type: 'GET',
     url: url
   }).success(function(data){
+    for (var i = 0; i < data.length; i++) {
+      data[i].id = i;
+    };
+    _data.todos = data;
     output.resolve(data);
   }).error(function(error){
     output.reject(error);
@@ -45,26 +49,6 @@ var AppStore = merge(EventEmitter.prototype, {
     return httpGet('/api/things');
   },
 
-  // getData: function(){
-  //   console.log('triggered');
-  //   return Q($.ajax({
-  //     url: '/api/things'}))
-  //   .then(function(data) {
-  //       console.log('trigger2',data);
-  //       var output = [];
-  //       for (var i in data) {
-  //         var temp = {id: i, _id: data[i]['_id'], item: data[i]['name']};
-  //         output.push(temp);
-  //       }
-  //       _data.todos = output;
-  //       console.log(_data);
-  //       return _data;
-  //     })
-  //   .catch(function(err) {
-  //     console.log('failed to reach the db',err);
-  //     return {todos: []};
-  //   });
-  // },
 
   emitChange: function(){
     this.emit(CHANGE_EVENT);
@@ -102,7 +86,7 @@ AppDispatcher.register(function(payload){
     _data.todos.push(temp);
     $.ajax({
       type: 'POST',
-      data: JSON.Stringify(temp),
+      data: JSON.stringify(temp),
       contentType: 'application/json',
       url: '/api/things/',
       success: function(item) {
@@ -120,18 +104,25 @@ AppDispatcher.register(function(payload){
 
 
   if(action.actionType === AppConstants.REMOVE){
+    console.log('t3')
+    console.log(action)
+    console.log(_data.todos)
+
     for (var i = 0; i < _data.todos.length; i++) {
+      console.log(action.id);
       if (_data.todos[i].id === action.id) {
         var temp = _data.todos.splice(i, 1);
+        console.log(temp[0]['_id'])
         //AJAX GET passing in n
-        $.ajax({
+        return $.ajax({
           type: 'DELETE',
-          url: '/api/thing/' + temp['_id'],
-          success: function(){
+          url: '/api/thing/' + temp[0]['_id'],
+          success: function(item){
             console.log('item removed successfully');
+            console.log(item)
           },
-          remove: function(failure){
-            console.log('item removed successfully');
+          failure: function(failure){
+            console.log('item remove failed', failure);
             AppStore.getData();
           },
         });

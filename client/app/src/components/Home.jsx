@@ -28,15 +28,31 @@ var APP = React.createClass({
   },
 
   _onChange: function(){
-    this.setState(getAppState());
+    // this.setState(getAppState());
+    var that = this;
+    Q(getAppState()).then(function(promise){
+      console.log('change')
+      console.log(promise)
+      that.setState({todos: promise})
+    })
+
   },
 
   componentDidMount: function(){
+    var that = this;
+    console.log(1)
     AppStore.addChangeListener(this._onChange);
-    Q(AppActions.populateAction()).then(function(promisedData){
-      console.log(promisedData);
-      this.setState(promisedData);
-    });
+    // Q(AppActions.populateAction()).then(function(promisedData){
+    //   console.log(promisedData);
+    //   this.setState(promisedData);
+    // });
+    Q(getAppState()).then(function(promise){
+      console.log(2)
+      console.log("this:",that)
+      console.log(promise)
+      // var data = {todos: promise}
+      that.setState({todos: promise})
+    })
   },
 
   componentWillUnmount: function(){
@@ -48,6 +64,7 @@ var APP = React.createClass({
   },
 
   render: function(){
+    console.log("my state is", this.state)
     return (
       <div>
         <NAV/>

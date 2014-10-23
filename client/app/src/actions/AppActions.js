@@ -15,6 +15,7 @@ var AppActions = {
     });
   },
   removeItemAction: function(id) {
+    console.log('t1')
     AppDispatcher.handleViewAction({
       actionType: AppConstants.REMOVE,
       id: id
